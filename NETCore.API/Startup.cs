@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using JavaScriptEngineSwitcher.Core;
+using JavaScriptEngineSwitcher.ChakraCore;
+using React.AspNet;
 
 namespace NETCore.API
 {
@@ -16,6 +19,8 @@ namespace NETCore.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddReact();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -27,24 +32,7 @@ namespace NETCore.API
             }
 
             app.UseMvc();
-
-            if(env.IsStaging())
-            {
-                app.Run((context) =>
-                {
-                    throw new Exception("Not authorized!");
-                });
-            }
-
-            //app.Run((context) =>
-            //{
-            //    throw new Exception("Not authorized!");
-            //});
-
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Hello World!");
-            });
+            app.UseStaticFiles();
         }
     }
 }
